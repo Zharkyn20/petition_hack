@@ -76,7 +76,11 @@ class UserPassportVerificationImages(models.Model):
         choices=AuthStatusChoices.choices,
         verbose_name='Статус аутентификации',
         default=AuthStatusChoices.PENDING,
-        blank=True, null=True)
+        blank=True, null=True,
+        help_text="CREATED - Новый\n"
+                  "CONFIRMED - Верифицирован\n"
+                  "REJECTED - Отклонен\n"
+                  "PENDING - На рассмотрении\n")
 
     def __str__(self):
         return self.user.full_name

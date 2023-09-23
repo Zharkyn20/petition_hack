@@ -25,7 +25,7 @@ class TokenObtainLifetimeSerializer(TokenObtainPairSerializer):
 
 class RegisterSerializer(serializers.Serializer):
     email = serializers.EmailField(required=True)
-    inn = serializers.CharField(required=True, min_length=14, max_length=14)
+    inn = serializers.CharField(required=True, max_length=14)
     password = serializers.CharField(required=True, min_length=8)
     full_name = serializers.CharField(required=True)
     name = serializers.CharField(required=True)
