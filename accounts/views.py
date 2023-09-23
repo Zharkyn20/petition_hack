@@ -21,7 +21,7 @@ class TokenObtainPairView(TokenViewBase):
     """
         Return JWT tokens (access and refresh) for specific user based on username and password.
     """
-    serializer_class = TokenObtainPairSerializer
+    serializer_class = serializers.TokenObtainLifetimeSerializer
 
 
 class TokenRefreshView(TokenViewBase):
@@ -97,6 +97,8 @@ class VerifyCodeView(generics.CreateAPIView):
                 'access_token': str(token.access_token),
                 'refresh': str(token),
                 'access_token_expires_in': token.access_token.lifetime.total_seconds(),
+                'refresh_token_expires_in': token.lifetime.total_seconds(),
+                'auth_status': user.auth_status,
             }
             return Response(data, status=status.HTTP_200_OK)
         else:

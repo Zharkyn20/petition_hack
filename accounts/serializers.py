@@ -1,8 +1,26 @@
 import random
 
 from rest_framework import serializers
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 from accounts.models import UserAccount, UserPassportVerificationImages
+
+
+class TokenObtainLifetimeSerializer(TokenObtainPairSerializer):
+
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
+        token['auth_status'] = user.auth_status
+        return token
+
+    def validate(self, attrs):
+        data = super().validate(attrs)
+        refresh = self.get_token(self.user)
+        data['access_token_lifetime'] = int(refresh.access_token.lifetime.total_seconds())
+        data['refresh_token_lifetime'] = int(refresh.lifetime.total_seconds())
+        data['auth_status'] = self.user.auth_status
+        return data
 
 
 class RegisterSerializer(serializers.Serializer):

@@ -71,7 +71,12 @@ class UserPassportVerificationImages(models.Model):
     passport_front = models.ImageField(upload_to='passport_front/')
     passport_back = models.ImageField(upload_to='passport_back/')
     passport_selfie = models.ImageField(upload_to='passport_selfie/')
-    is_verified = models.BooleanField(default=False)
+    auth_status = models.CharField(
+        max_length=100,
+        choices=AuthStatusChoices.choices,
+        verbose_name='Статус аутентификации',
+        default=AuthStatusChoices.PENDING,
+        blank=True, null=True)
 
     def __str__(self):
         return self.user.full_name
@@ -79,3 +84,11 @@ class UserPassportVerificationImages(models.Model):
     class Meta:
         verbose_name = "Фотографии паспорта для верификации"
         verbose_name_plural = "Фотографии паспортов для верификаций"
+
+    def save(self, *args, **kwargs):
+        if self.auth_status == AuthStatusChoices.CONFIRMED:
+            self.user.auth_status = AuthStatusChoices.CONFIRMED
+        elif self.auth_status == AuthStatusChoices.REJECTED:
+            self.user.auth_status = AuthStatusChoices.REJECTED
+        self.user.save()
+        super().save(*args, **kwargs)
