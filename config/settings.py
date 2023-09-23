@@ -28,7 +28,7 @@ SECRET_KEY = config("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = config("ALLOWED_HOSTS")
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', 'localhost').split(' ')
 
 
 # Application definition
@@ -46,6 +46,10 @@ INSTALLED_APPS = [
     "drf_yasg",
     "phonenumber_field",
     'django_filters',
+    'tinymce',
+
+    "accounts",
+    "petitions"
 ]
 
 MIDDLEWARE = [
@@ -158,6 +162,9 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',
+        'accounts.permissions.ReadOnlyOrAuthenticatedPermission',
     ],
+    'DEFAULT_PAGINATION_CLASS': 'common.pagination.CustomPagination'
 }
+
+AUTH_USER_MODEL = 'accounts.UserAccount'
