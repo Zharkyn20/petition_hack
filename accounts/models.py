@@ -3,6 +3,13 @@ from django.contrib.auth.models import AbstractUser, BaseUserManager, Group
 from phonenumber_field.modelfields import PhoneNumberField
 
 
+class AuthStatusChoices(models.TextChoices):
+    CREATED = 'CREATED', 'Новый'
+    CONFIRMED = 'CONFIRMED', 'Верифицирован'
+    REJECTED = 'REJECTED', 'Отклонен'
+    PENDING = 'PENDING', 'На рассмотрении'
+
+
 class UserManager(BaseUserManager):
     use_in_migration = True
 
@@ -39,6 +46,12 @@ class UserAccount(AbstractUser):
     is_superuser = models.BooleanField(default=False)
 
     is_verified = models.BooleanField(default=False)
+    auth_status = models.CharField(
+        max_length=100,
+        choices=AuthStatusChoices.choices,
+        verbose_name='Статус аутентификации',
+        default=AuthStatusChoices.CREATED,
+        blank=True, null=True)
 
     objects = UserManager()
 
@@ -53,4 +66,16 @@ class UserAccount(AbstractUser):
         verbose_name_plural = "Пользователи"
 
 
-# class PassportVerification(models.Model):
+class UserPassportVerificationImages(models.Model):
+    user = models.ForeignKey(UserAccount, on_delete=models.CASCADE, related_name='passport_images')
+    passport_front = models.ImageField(upload_to='passport_front/')
+    passport_back = models.ImageField(upload_to='passport_back/')
+    passport_selfie = models.ImageField(upload_to='passport_selfie/')
+    is_verified = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.user.full_name
+
+    class Meta:
+        verbose_name = "Фотографии паспорта для верификации"
+        verbose_name_plural = "Фотографии паспортов для верификаций"

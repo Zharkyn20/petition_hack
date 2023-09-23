@@ -1,6 +1,8 @@
+import random
+
 from rest_framework import serializers
 
-from accounts.models import UserAccount
+from accounts.models import UserAccount, UserPassportVerificationImages
 
 
 class RegisterSerializer(serializers.Serializer):
@@ -10,15 +12,34 @@ class RegisterSerializer(serializers.Serializer):
     full_name = serializers.CharField(required=True)
     name = serializers.CharField(required=True)
 
-    # def validate_email(self, email):
-    def create(self, validated_data):
-        user = UserAccount.objects.create(
-            email=validated_data["email"],
-            inn=validated_data["inn"],
-            password=validated_data["password"],
-            full_name=validated_data["full_name"],
-            name=validated_data["name"],
-        )
-        user.save()
+    def validate_email(self, value):
+        if UserAccount.objects.filter(email=value).exists():
+            raise serializers.ValidationError("Пользователь с таким email уже существует.")
+        return value
 
-        return user
+    def validate_inn(self, value):
+        if UserAccount.objects.filter(inn=value).exists():
+            raise serializers.ValidationError("Пользователь с таким ИНН уже существует.")
+        return value
+
+
+class VerifyCodeSerializer(serializers.Serializer):
+    email = serializers.EmailField(required=True)
+    code = serializers.CharField(required=True)
+
+    def validate_email(self, value):
+        if UserAccount.objects.filter(email=value).exists():
+            raise serializers.ValidationError("Пользователь с таким email уже существует.")
+        return value
+
+
+class UserPassportVerificationImagesSerializer(serializers.ModelSerializer):
+    passport_front = serializers.ImageField(required=True)
+    passport_back = serializers.ImageField(required=True)
+    passport_selfie = serializers.ImageField(required=True)
+    is_verified = serializers.BooleanField(read_only=True)
+    user = serializers.SlugRelatedField(slug_field="full_name", read_only=True)
+
+    class Meta:
+        model = UserPassportVerificationImages
+        fields = "__all__"
