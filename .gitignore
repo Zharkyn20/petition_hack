@@ -1,0 +1,9 @@
+.idea/
+venv/
+__pycache__/
+*/__pycache__/
+*/migrations/0*
+images/
+.env
+static/
+staticfiles/
