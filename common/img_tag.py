@@ -22,13 +22,12 @@ def image_tag(obj):
     #         height = 250
     #     print(width, height)
     #     img = img.resize((width, height), Image.ANTIALIAS)
+    img = Image.open(obj.passport_front.path)
     width, height = img.size
-    width = int(250 / height * width)
     height = 250
-    return mark_safe(
-        '<img src="{url}" width="{width}" height="{height}"/>'.format(
-            url=obj.passport_front.url, width=width, height=height
+    width = 250
+    return '<img src="{url}" width="{width}" height="{height}"/>'.format(
+            url=obj.url, width=width, height=height
         )
-    )
     # else:
     #     return "-"

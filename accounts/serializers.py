@@ -53,7 +53,6 @@ class VerifyCodeSerializer(serializers.Serializer):
 
 class UserPassportVerificationImagesSerializer(serializers.ModelSerializer):
     passport_front = serializers.ImageField(required=True)
-    passport_back = serializers.ImageField(required=True)
     passport_selfie = serializers.ImageField(required=True)
     is_verified = serializers.BooleanField(read_only=True)
     user = serializers.SlugRelatedField(slug_field="full_name", read_only=True)

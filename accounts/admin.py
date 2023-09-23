@@ -20,22 +20,19 @@ class UserPassportVerificationImagesAdmin(admin.ModelAdmin):
     list_display = ['id', 'user', 'auth_status']
     list_display_links = ['id', 'user', 'auth_status']
 
-    def passport_front_tag(self, obj):
-        return image_tag(obj)
+    def passport_front_preview(self, obj):
+        return mark_safe('<img src="{url}" width="300"/>'.format(
+            url=obj.passport_front.url
+        ))
 
-    passport_front_tag.short_description = "Паспорт (лицевая сторона)"
+    def passport_selfie_preview(self, obj):
+        return mark_safe('<img src="{url}" width="300"/>'.format(
+            url=obj.passport_selfie.url
+        ))
 
-    def passport_back_tag(self, obj):
-        return image_tag(obj.passport_back)
-
-    passport_back_tag.short_description = "Паспорт (обратная сторона)"
-
-    def passport_selfie_tag(self, obj):
-        return image_tag(obj.passport_selfie)
-
-    passport_selfie_tag.short_description = "Селфи с паспортом"
-
-    readonly_fields = ("passport_front_tag", "passport_back_tag", "passport_selfie_tag")
+    readonly_fields = ("passport_front_preview", "passport_selfie_preview",)
+    passport_front_preview.short_description = "Фото лицевой стороны паспорта"
+    passport_selfie_preview.short_description = "Фото с паспортом"
 
     class Meta:
         model = UserPassportVerificationImages
