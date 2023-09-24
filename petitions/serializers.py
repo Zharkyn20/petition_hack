@@ -87,7 +87,7 @@ class PetitionSerializer(serializers.ModelSerializer):
 
 
 class PetitionCreateSerializer(serializers.ModelSerializer):
-    images = Base64ImageField(required=True)
+    images = serializers.ImageField(required=True)
 
     class Meta:
         model = Petition
