@@ -87,7 +87,7 @@ class PetitionSerializer(serializers.ModelSerializer):
 
 
 class PetitionCreateSerializer(serializers.ModelSerializer):
-    images = PetitionImageCreateSerializer(many=True, required=False)
+    images = Base64ImageField(required=True)
 
     class Meta:
         model = Petition
@@ -97,8 +97,7 @@ class PetitionCreateSerializer(serializers.ModelSerializer):
         images = validated_data.pop("images")
 
         petition = Petition.objects.create(**validated_data)
-        for image in images:
-            PetitionImage.objects.create(petition=petition, **image)
+        PetitionImage.objects.create(petition=petition, **image)
 
         existing_tags = list(PetitionTag.objects.values_list("name", flat=True))
 
