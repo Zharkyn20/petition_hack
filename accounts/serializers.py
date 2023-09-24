@@ -1,5 +1,7 @@
+import base64
 import random
 
+from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
@@ -52,8 +54,8 @@ class VerifyCodeSerializer(serializers.Serializer):
 
 
 class UserPassportVerificationImagesSerializer(serializers.ModelSerializer):
-    passport_front = serializers.ImageField(required=True)
-    passport_selfie = serializers.ImageField(required=True)
+    passport_front = Base64ImageField(required=True)
+    passport_selfie = Base64ImageField(required=True)
     is_verified = serializers.BooleanField(read_only=True)
     user = serializers.SlugRelatedField(slug_field="full_name", read_only=True)
 

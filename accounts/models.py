@@ -70,7 +70,7 @@ class UserAccount(AbstractUser):
 class UserPassportVerificationImages(models.Model):
     user = models.ForeignKey(UserAccount, on_delete=models.CASCADE, related_name='passport_images')
     passport_front = models.ImageField(upload_to='passport_front/', verbose_name='Фото лицевой стороны паспорта')
-    passport_selfie = models.ImageField(upload_to='passport_selfie/', verbose_name='Фото с паспортом')
+    passport_selfie = models.ImageField(upload_to='passport_selfie/', verbose_name='Фото с паспортом', blank=True, null=True)
     auth_status = models.CharField(
         max_length=100,
         choices=AuthStatusChoices.choices,
