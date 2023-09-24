@@ -62,3 +62,18 @@ class UserPassportVerificationImagesSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserPassportVerificationImages
         fields = "__all__"
+
+
+class UserRetrieveSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserAccount
+        exclude = (
+            "password",
+            "groups",
+            "user_permissions",
+            "is_staff",
+            "is_superuser",
+            "is_active",
+            "last_login",
+            "date_joined",
+        )

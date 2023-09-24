@@ -6,7 +6,7 @@ from decouple import config
 from django.http import HttpRequest
 from rest_framework import generics, status
 from rest_framework.parsers import MultiPartParser, FormParser
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.views import TokenViewBase
 from rest_framework_simplejwt.serializers import TokenRefreshSerializer, TokenObtainPairSerializer
@@ -115,3 +115,11 @@ class UserPassportVerificationImagesView(generics.CreateAPIView):
         serializer.save(
             user=user
         )
+
+
+class UserMeView(generics.RetrieveAPIView):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = serializers.UserRetrieveSerializer
+
+    def get_object(self):
+        return self.request.user
