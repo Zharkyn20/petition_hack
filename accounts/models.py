@@ -94,5 +94,7 @@ class UserPassportVerificationImages(models.Model):
             self.user.auth_status = AuthStatusChoices.CONFIRMED
         elif self.auth_status == AuthStatusChoices.REJECTED:
             self.user.auth_status = AuthStatusChoices.REJECTED
+        elif self.auth_status == AuthStatusChoices.PENDING:
+            self.user.auth_status = AuthStatusChoices.PENDING
         self.user.save()
         super().save(*args, **kwargs)

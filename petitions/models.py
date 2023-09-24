@@ -62,3 +62,15 @@ class PetitionVote(models.Model):
     class Meta:
         verbose_name = 'Голос петиции'
         verbose_name_plural = 'Голоса петиций'
+
+
+class PetitionTag(models.Model):
+    petitions = models.ManyToManyField(Petition, related_name='tags', blank=True)
+    name = models.CharField(max_length=255, unique=True)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = 'Тег петиции'
+        verbose_name_plural = 'Теги петиций'

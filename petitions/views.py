@@ -1,14 +1,19 @@
+import django_filters
 from django.http import HttpRequest
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 from petitions import serializers
 
-from .models import Petition, PetitionImage, PetitionComment, PetitionVote
+from .models import Petition, PetitionImage, PetitionComment, PetitionVote, PetitionTag
 
 
 class PetitionViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.PetitionCreateSerializer
     queryset = Petition.objects.all()
+    filter_backends = (
+        django_filters.rest_framework.DjangoFilterBackend,
+    )
+    filter_fields = ('author',)
 
     def perform_create(self, serializer):
         user = self.request.user
@@ -26,17 +31,6 @@ class PetitionViewSet(viewsets.ModelViewSet):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
-
-        images = self.request.data.getlist("images")
-        images_batch = []
-        for image in images:
-            images_batch.append(
-                PetitionImage(
-                    petition=serializer.instance,
-                    image=image
-                )
-            )
-        PetitionImage.objects.bulk_create(images_batch)
 
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
@@ -78,3 +72,8 @@ class PetitionVoteViewSet(viewsets.ModelViewSet):
         if self.action in ["list", "retrieve"]:
             return serializers.PetitionVoteSerializer
         return super().get_serializer_class()
+
+
+class PetitionTagViewSet(viewsets.ModelViewSet):
+    queryset = PetitionTag.objects.all()
+    serializer_class = serializers.PetitionTagSerializer

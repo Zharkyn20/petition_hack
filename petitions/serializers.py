@@ -1,6 +1,7 @@
+from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
 
-from .models import Petition, PetitionImage, PetitionComment, PetitionVote
+from .models import Petition, PetitionImage, PetitionComment, PetitionVote, PetitionTag
 from accounts.models import UserAccount
 
 
@@ -18,7 +19,7 @@ class PetitionImageSerializer(serializers.ModelSerializer):
 
 
 class PetitionImageCreateSerializer(serializers.Serializer):
-    image = serializers.ImageField(required=True)
+    image = Base64ImageField(required=True)
 
 
 class PetitionCommentSerializer(serializers.ModelSerializer):
@@ -49,11 +50,19 @@ class PetitionVoteCreateSerializer(serializers.ModelSerializer):
         exclude = ("author",)
 
 
+class PetitionTagReadSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = PetitionTag
+        fields = ("id", "name")
+
+
 class PetitionSerializer(serializers.ModelSerializer):
     author = UserAccountSerializer(read_only=True)
     images = PetitionImageSerializer(many=True, read_only=True)
     agree = serializers.SerializerMethodField('get_agree')
     disagree = serializers.SerializerMethodField('get_disagree')
+    tags = PetitionTagReadSerializer(many=True, read_only=True)
 
     class Meta:
         model = Petition
@@ -68,7 +77,37 @@ class PetitionSerializer(serializers.ModelSerializer):
 
 class PetitionCreateSerializer(serializers.ModelSerializer):
     images = PetitionImageCreateSerializer(many=True, required=False)
+    tags = serializers.ListSerializer(child=serializers.CharField(max_length=100))
 
     class Meta:
         model = Petition
         exclude = ("author",)
+
+    def create(self, validated_data):
+        tags = validated_data.pop("tags")
+        images = validated_data.pop("images")
+
+        petition = Petition.objects.create(**validated_data)
+        for image in images:
+            PetitionImage.objects.create(petition=petition, **image)
+
+        existing_tags = list(PetitionTag.objects.values_list("name", flat=True))
+
+        for tag in tags:
+            if tag not in existing_tags:
+                tag = PetitionTag.objects.create(name=tag)
+                tag.petitions.add(petition)
+            else:
+                tag = PetitionTag.objects.get(name=tag)
+                tag.petitions.add(petition)
+
+        return petition
+
+
+class PetitionTagSerializer(serializers.ModelSerializer):
+    petitions = PetitionSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = PetitionTag
+        fields = '__all__'
+

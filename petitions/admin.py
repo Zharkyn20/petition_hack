@@ -2,6 +2,7 @@ from django.contrib import admin
 
 
 from .models import Petition, PetitionImage, PetitionVote, PetitionComment
+from .models import PetitionTag
 
 
 class PetitionImageInline(admin.TabularInline):
@@ -23,3 +24,11 @@ class PetitionAdmin(admin.ModelAdmin):
         fields = '__all__'
 
 
+@admin.register(PetitionTag)
+class PetitionTagAdmin(admin.ModelAdmin):
+    list_display = ['id', 'name']
+    list_display_links = ['id', 'name']
+
+    class Meta:
+        model = PetitionTag
+        fields = '__all__'
