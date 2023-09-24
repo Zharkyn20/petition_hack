@@ -23,6 +23,11 @@ class TokenObtainLifetimeSerializer(TokenObtainPairSerializer):
         data['access_token_lifetime'] = int(refresh.access_token.lifetime.total_seconds())
         data['refresh_token_lifetime'] = int(refresh.lifetime.total_seconds())
         data['auth_status'] = self.user.auth_status
+        data['user_id'] = self.user.id
+        data['full_name'] = self.user.full_name
+        data['email'] = self.user.email
+        data['inn'] = self.user.inn
+        data['name'] = self.user.name
         return data
 
 

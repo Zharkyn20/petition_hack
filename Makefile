@@ -15,9 +15,3 @@ install:
 del_migrations:
 	find . -path "*/migrations/*.py" -not -name "__init__.py" -delete
 	find . -path "*/migrations/*.pyc"  -delete
-
-db:
-	docker-compose exec -it db bash
-
-server:
-	docker-compose exec -it server bash
