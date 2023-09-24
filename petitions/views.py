@@ -13,7 +13,9 @@ class PetitionViewSet(viewsets.ModelViewSet):
     filter_backends = (
         django_filters.rest_framework.DjangoFilterBackend,
     )
-    filter_fields = ('author',)
+    filterset_fields = (
+        'tags'
+    )
 
     def perform_create(self, serializer):
         user = self.request.user
