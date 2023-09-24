@@ -88,7 +88,7 @@ class PetitionSerializer(serializers.ModelSerializer):
 
 class PetitionCreateSerializer(serializers.ModelSerializer):
     images = PetitionImageCreateSerializer(many=True, required=False)
-    tags = serializers.ListSerializer(child=serializers.CharField(max_length=100))
+    tags = serializers.ListSerializer(child=serializers.CharField(max_length=100), required=False)
 
     class Meta:
         model = Petition
