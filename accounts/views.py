@@ -99,6 +99,11 @@ class VerifyCodeView(generics.CreateAPIView):
                 'access_token_expires_in': token.access_token.lifetime.total_seconds(),
                 'refresh_token_expires_in': token.lifetime.total_seconds(),
                 'auth_status': user.auth_status,
+                'user_id': user.id,
+                'full_name': user.full_name,
+                'email': user.email,
+                'inn': user.inn,
+                'name': user.name,
             }
             return Response(data, status=status.HTTP_200_OK)
         else:
