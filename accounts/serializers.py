@@ -71,6 +71,7 @@ class UserPassportVerificationImagesSerializer(serializers.ModelSerializer):
     passport_front = Base64ImageField(required=True)
     passport_selfie = Base64ImageField(required=True)
     is_verified = serializers.BooleanField(read_only=True)
+    user = serializers.SlugRelatedField(slug_field="full_name", read_only=True)
 
     class Meta:
         model = UserPassportVerificationImages
