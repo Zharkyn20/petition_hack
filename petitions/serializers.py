@@ -63,6 +63,7 @@ class PetitionSerializer(serializers.ModelSerializer):
     agree = serializers.SerializerMethodField('get_agree')
     disagree = serializers.SerializerMethodField('get_disagree')
     tags = PetitionTagReadSerializer(many=True, read_only=True)
+    vote_status = serializers.SerializerMethodField()
 
     class Meta:
         model = Petition
@@ -73,6 +74,14 @@ class PetitionSerializer(serializers.ModelSerializer):
 
     def get_disagree(self, obj):
         return obj.votes.filter(is_agree=False).count()
+
+    def get_vote_status(self, obj):
+        user = self.context['request'].user  # Get the current user
+        try:
+            vote = PetitionVote.objects.get(petition=obj, author=user)
+            return "agree" if vote.is_agree else "disagree"
+        except PetitionVote.DoesNotExist:
+            return "no_vote"
 
 
 class PetitionCreateSerializer(serializers.ModelSerializer):
