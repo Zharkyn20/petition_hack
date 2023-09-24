@@ -23,7 +23,7 @@ class TokenObtainLifetimeSerializer(TokenObtainPairSerializer):
         data['access_token_lifetime'] = int(refresh.access_token.lifetime.total_seconds())
         data['refresh_token_lifetime'] = int(refresh.lifetime.total_seconds())
         data['auth_status'] = self.user.auth_status
-        data['user_id'] = self.user.id
+        data['id'] = self.user.id
         data['full_name'] = self.user.full_name
         data['email'] = self.user.email
         data['inn'] = self.user.inn
@@ -71,11 +71,26 @@ class UserPassportVerificationImagesSerializer(serializers.ModelSerializer):
     passport_front = Base64ImageField(required=True)
     passport_selfie = Base64ImageField(required=True)
     is_verified = serializers.BooleanField(read_only=True)
-    user = serializers.SlugRelatedField(slug_field="full_name", read_only=True)
 
     class Meta:
         model = UserPassportVerificationImages
         fields = "__all__"
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        refresh = TokenObtainPairSerializer.get_token(self.user)
+
+        data['access_token_lifetime'] = int(refresh.access_token.lifetime.total_seconds())
+        data['refresh_token_lifetime'] = int(refresh.lifetime.total_seconds())
+        data['auth_status'] = self.user.auth_status
+        data['id'] = self.user.id
+        data['full_name'] = self.user.full_name
+        data['email'] = self.user.email
+        data['inn'] = self.user.inn
+        data['name'] = self.user.name
+        data['access_token']: str(refresh.access_token)
+        data['refresh']: str(refresh)
+        return data
 
 
 class UserRetrieveSerializer(serializers.ModelSerializer):
