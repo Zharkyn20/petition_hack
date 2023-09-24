@@ -88,14 +88,12 @@ class PetitionSerializer(serializers.ModelSerializer):
 
 class PetitionCreateSerializer(serializers.ModelSerializer):
     images = PetitionImageCreateSerializer(many=True, required=False)
-    tags = serializers.ListSerializer(child=serializers.CharField(max_length=100), required=False)
 
     class Meta:
         model = Petition
         exclude = ("author",)
 
     def create(self, validated_data):
-        tags = validated_data.pop("tags")
         images = validated_data.pop("images")
 
         petition = Petition.objects.create(**validated_data)
@@ -103,14 +101,6 @@ class PetitionCreateSerializer(serializers.ModelSerializer):
             PetitionImage.objects.create(petition=petition, **image)
 
         existing_tags = list(PetitionTag.objects.values_list("name", flat=True))
-
-        for tag in tags:
-            if tag not in existing_tags:
-                tag = PetitionTag.objects.create(name=tag)
-                tag.petitions.add(petition)
-            else:
-                tag = PetitionTag.objects.get(name=tag)
-                tag.petitions.add(petition)
 
         return petition
 
