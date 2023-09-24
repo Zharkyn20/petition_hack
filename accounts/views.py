@@ -28,7 +28,7 @@ class TokenRefreshView(TokenViewBase):
     """
         Renew tokens (access and refresh) with new expire time based on specific user's access token.
     """
-    serializer_class = TokenRefreshSerializer
+    serializer_class = serializers.TokenRefreshLifetimeSerializer
 
 
 class RegisterView(generics.CreateAPIView):

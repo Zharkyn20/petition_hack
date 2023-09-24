@@ -2,8 +2,9 @@ import base64
 import random
 
 from drf_extra_fields.fields import Base64ImageField
-from rest_framework import serializers
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework import serializers, status
+from rest_framework.response import Response
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer, TokenRefreshSerializer
 
 from accounts.models import UserAccount, UserPassportVerificationImages
 
@@ -23,6 +24,14 @@ class TokenObtainLifetimeSerializer(TokenObtainPairSerializer):
         data['refresh_token_lifetime'] = int(refresh.lifetime.total_seconds())
         data['auth_status'] = self.user.auth_status
         return data
+
+
+class TokenRefreshLifetimeSerializer(TokenRefreshSerializer):
+    refresh = serializers.CharField(required=False, allow_blank=True, allow_null=True)
+    def validate_refresh(self, value):
+        if value == "" or value is None:
+            return Response({"message": "Refresh token is required."}, status=status.HTTP_401_UNAUTHORIZED)
+        return value
 
 
 class RegisterSerializer(serializers.Serializer):
