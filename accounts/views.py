@@ -89,8 +89,8 @@ class VerifyCodeView(generics.CreateAPIView):
                 full_name=stored_email[b'full_name'].decode('utf-8'),
                 name=stored_email[b'name'].decode('utf-8')
             )
-            user.save()
             user.set_password(stored_email[b'password'].decode('utf-8'))
+            user.save()
 
             token = TokenObtainPairSerializer.get_token(user)
             data = {
