@@ -121,6 +121,28 @@ class UserPassportVerificationImagesView(generics.CreateAPIView):
             user=user
         )
 
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        user = self.request.user
+        token = TokenObtainPairSerializer.get_token(user)
+
+        self.perform_create(serializer)
+        data = {
+            'access_token': str(token.access_token),
+            'refresh': str(token),
+            'access_token_expires_in': token.access_token.lifetime.total_seconds(),
+            'refresh_token_expires_in': token.lifetime.total_seconds(),
+            'auth_status': user.auth_status,
+            'id': user.id,
+            'full_name': user.full_name,
+            'email': user.email,
+            'inn': user.inn,
+            'name': user.name,
+        }
+        return Response(data, status=status.HTTP_201_CREATED)
+
 
 class UserMeView(generics.RetrieveAPIView):
     permission_classes = (IsAuthenticated,)
